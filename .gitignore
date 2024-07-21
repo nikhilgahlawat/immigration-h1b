@@ -1,2 +1,10 @@
 .DS_Store
 .ipynb_checkpoints
+
+# Ignore all temporary or scratch notbook files. These will begin with _
+_*.ipynb
+
+# Do not commit any data/csv files in the raw, intermediate, or analysis directories
+data/analysis/*
+data/intermediate/*
+data/raw/*
