@@ -8,3 +8,4 @@ _*.ipynb
 data/analysis/*
 data/intermediate/*
 data/raw/*
+.Rproj.user
