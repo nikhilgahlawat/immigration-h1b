@@ -208,7 +208,6 @@ plotdata_approvals_outsourcing <- company_year %>%
     , employer = fct_reorder(employer, approvals_rank, .desc = TRUE)
   )
 
-
 ## Create chart
 ggplot(plotdata_approvals_outsourcing) +
   labs(
@@ -264,3 +263,99 @@ ggplot(plotdata_approvals_outsourcing) +
       , 'IBM' = 'dashed'
       )
     )
+
+
+
+
+
+
+
+# Chart: Tech company approvals
+## List of companies to display
+tech_company_list <- c(
+  'Amazon'
+  , 'Microsoft'
+  , 'Alphabet (Google)'
+  , 'Apple'
+  , 'Intel'
+  , 'Meta Platforms (Facebook)'
+)
+
+## Format chart data
+plotdata_approvals_tech <- company_year %>% 
+  filter(employer %in% tech_company_list) %>% 
+  select(employer, fiscal_year, initial_approval, continuing_approval, total_approval, share_of_cap) %>% 
+  # Create a field that ranks companies by total approvals
+  # Will use later to determine how companies are ordered in the chart
+  left_join(
+    company_year %>% 
+      filter(employer %in% tech_company_list) %>% 
+      group_by(employer) %>% 
+      summarise(total_approval = sum(total_approval)) %>% 
+      mutate(approvals_rank = rank(total_approval)) %>% 
+      select(-total_approval)
+  ) %>% 
+  mutate(
+    employer = case_when(
+      employer == 'Meta Platforms (Facebook)' ~ 'Meta'
+      , employer == 'Alphabet (Google)' ~ 'Google'
+      , TRUE ~ employer
+    )
+    , employer = fct_reorder(employer, approvals_rank, .desc = TRUE)
+  )
+
+## Create chart
+ggplot(plotdata_approvals_tech) +
+  labs(
+    title = 'H-1B Visa Approvals: Tech Companies'
+    , subtitle = 'New visas and renewals approved by the USCIS'
+    , caption = 'Source: USCIS. Industry classification described in methodology.'
+    , x = ''
+    , y = ''
+  ) +
+  line_chart_theme +
+  geom_line(
+    aes(fiscal_year, total_approval, color = employer, linetype = employer)
+    , size = 1
+  ) +
+  geom_segment(
+    aes(x = min(fiscal_year), xend = max(fiscal_year), y = 0, yend = 0)
+    , inherit.aes = FALSE
+    , color = "black"
+    , size = .4
+  ) +
+  scale_y_continuous(
+    # labels = label_number(scale_cut = cut_short_scale())
+    labels = label_comma()
+    , expand = c(0, 0)
+    , limits = c(0, 30e3)
+    , breaks = seq(10e3, 30e3, by = 10e3)
+  ) +
+  scale_x_continuous(
+    breaks = seq(
+      min(plotdata_approvals_outsourcing$fiscal_year)
+      , max(plotdata_approvals_outsourcing$fiscal_year)
+      , by = 2
+    )
+    , expand = c(0,0)
+  ) +
+  scale_color_manual(
+    values = c(
+      'Amazon' = '#B6A6E9'
+      , 'Microsoft' = '#5E40BE'
+      , 'Google' = '#21134D'
+      , 'Apple' = '#B6A6E9'
+      , 'Intel' = '#5E40BE'
+      , 'Meta' = '#21134D'
+    )
+  ) +
+  scale_linetype_manual(
+    values = c(
+      'Amazon' = 'solid'
+      , 'Microsoft' = 'solid'
+      , 'Google' = 'solid'
+      , 'Apple' = 'dashed'
+      , 'Intel' = 'dashed'
+      , 'Meta' = 'dashed'
+    )
+  )
