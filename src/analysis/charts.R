@@ -9,13 +9,16 @@ library(showtext)
 
 # Directories and file names
 data_dir <- '../data/analysis/'
+charts_dir <- '../assets/charts/'
 denials_file <- 'denials.csv'
 company_year_file <- 'company_year.csv'
-charts_dir <- '../assets/charts/'
+wages_file <- 'wages.csv'
+
 
 # Load data
 denials <- read.csv(paste0(data_dir, denials_file))
 company_year <- read.csv(paste0(data_dir, company_year_file))
+wages <- read.csv(paste0(data_dir, wages_file))
 
 # Format dataframe field names
 format_field_names <- function(df) {
@@ -264,12 +267,6 @@ ggplot(plotdata_approvals_outsourcing) +
       )
     )
 
-
-
-
-
-
-
 # Chart: Tech company approvals
 ## List of companies to display
 tech_company_list <- c(
@@ -333,8 +330,8 @@ ggplot(plotdata_approvals_tech) +
   ) +
   scale_x_continuous(
     breaks = seq(
-      min(plotdata_approvals_outsourcing$fiscal_year)
-      , max(plotdata_approvals_outsourcing$fiscal_year)
+      min(plotdata_approvals_tech$fiscal_year)
+      , max(plotdata_approvals_tech$fiscal_year)
       , by = 2
     )
     , expand = c(0,0)
@@ -358,4 +355,105 @@ ggplot(plotdata_approvals_tech) +
       , 'Intel' = 'dashed'
       , 'Meta' = 'dashed'
     )
+  )
+
+# Chart: Wages by industry
+plotdata_wages <- wages %>% 
+  mutate(
+    category = paste(group, PW_WAGE_LEVEL)
+    ) %>% 
+  filter(group %in% c('Outsourcing', 'Tech')) %>% 
+  filter(PW_WAGE_LEVEL %in% c('Level I', 'Level IV'))
+
+plotdata_wage_ribbons <- plotdata_wages %>% 
+  filter(PW_WAGE_LEVEL %in% c('Level I', 'Level IV')) %>% 
+  mutate(
+    PW_WAGE_LEVEL = gsub('\\s', '_', tolower(PW_WAGE_LEVEL))
+  ) %>% 
+  select(DATAFILE_YEAR, group, PW_WAGE_LEVEL, WAGE_ANNUAL_FROM) %>% 
+  pivot_wider(
+    id_cols = c('DATAFILE_YEAR', 'group')
+    , names_from = 'PW_WAGE_LEVEL'
+    , values_from = 'WAGE_ANNUAL_FROM'
+  )
+
+ggplot(plotdata_wages) + 
+  labs(
+    title = 'Wages for H-1B Workers'
+    , subtitle = 'Typical wage ranges for H-1B workers at outsourcing and tech companies'
+    , caption = 'Source: Department of Labor. Ranges are based on the prevailing wage levels designated by the DOL.'
+    , x = ''
+    , y = ''
+  ) +
+  line_chart_theme +
+  geom_ribbon(
+    data = plotdata_wage_ribbons %>% filter(group == 'Outsourcing')
+    , aes(x = DATAFILE_YEAR, ymin = level_i, ymax = level_iv)
+    , fill = '#F5921B'
+    , alpha = .1
+  ) +
+  geom_ribbon(
+    data = plotdata_wage_ribbons %>% filter(group == 'Tech')
+    , aes(x = DATAFILE_YEAR, ymin = level_i, ymax = level_iv)
+    , fill = '#5E40BE'
+    , alpha = .3
+  ) +
+  geom_line(
+    aes(DATAFILE_YEAR, WAGE_ANNUAL_FROM, group = category, color = group)
+    # , linetype = 'dashed'
+    , size = .5
+  ) +
+  geom_segment(
+    aes(
+      x = min(DATAFILE_YEAR)
+      , xend = max(DATAFILE_YEAR)
+      , y = plotdata_wage_ribbons %>% filter(DATAFILE_YEAR == 2015 & group == 'Outsourcing') %>% pull(level_iv)
+      , yend = plotdata_wage_ribbons %>% filter(DATAFILE_YEAR == 2015 & group == 'Outsourcing') %>% pull(level_iv)
+    )
+    , color = '#F5921B'
+    , size = .5
+    , linetype = 'dotted'
+  ) +
+  geom_segment(
+    aes(
+      x = min(DATAFILE_YEAR)
+      , xend = max(DATAFILE_YEAR)
+      , y = plotdata_wage_ribbons %>% filter(DATAFILE_YEAR == 2015 & group == 'Tech') %>% pull(level_iv)
+      , yend = plotdata_wage_ribbons %>% filter(DATAFILE_YEAR == 2015 & group == 'Tech') %>% pull(level_iv)
+    )
+    , color = '#5E40BE'
+    , size = .5
+    , linetype = 'dotted'
+  ) +
+  geom_segment(
+    aes(x = min(DATAFILE_YEAR), xend = max(DATAFILE_YEAR), y = 0, yend = 0)
+    , inherit.aes = FALSE
+    , color = "black"
+    , size = .4
+  ) +
+  scale_y_continuous(
+    # labels = label_comma(prefix = '$')
+    labels = label_number(scale_cut = cut_short_scale(), prefix = '$')
+    , expand = c(0, 0)
+    , limits = c(0, 200e3)
+  ) +
+  scale_x_continuous(
+    breaks = seq(
+      min(plotdata_wages$DATAFILE_YEAR)
+      , max(plotdata_wages$DATAFILE_YEAR)
+      , by = 2
+    )
+    , expand = c(0,0)
+  ) +
+  scale_color_manual(
+    values = c(
+      'Outsourcing' = '#F5921B'
+      , 'Tech' = '#5E40BE'
+    )
+  ) +
+  theme(
+    legend.position = 'top'
+    , legend.box.margin = margin(0, 0, -10, 0)
+    , plot.subtitle = element_text(margin = margin(b = 0))
+    , plot.margin = margin(5.5, 110, 5.5, 5.5)
   )
