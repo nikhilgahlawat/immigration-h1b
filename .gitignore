@@ -9,3 +9,6 @@ data/analysis/*
 data/intermediate/*
 data/raw/*
 .Rproj.user
+
+# Do not commit any image files in the assets folder
+assets/*
