@@ -14,6 +14,10 @@ denials_file <- 'denials.csv'
 company_year_file <- 'company_year.csv'
 wages_file <- 'wages.csv'
 
+# Other constants
+axis_linewidth = .4
+oranges <- c('#F8AE54', '#F5921B', '#CA6C0F', '#9E4A06', '#732E00')
+purples <- c('#B6A6E9', '#876FD4', '#5E40BE', '#3D2785', '#21134D')
 
 # Load data
 denials <- read.csv(paste0(data_dir, denials_file))
@@ -35,7 +39,7 @@ line_chart_theme <- theme(
   , panel.grid.minor.y = element_blank()
   , panel.grid.major.x = element_blank()
   , panel.grid.minor.x = element_blank()
-  , panel.grid.major.y = element_line(color = 'gray90', size = .3)
+  , panel.grid.major.y = element_line(color = 'gray90', linewidth = .3)
   , axis.ticks.y = element_blank()
   , axis.ticks.x = element_line(size = .4, color = 'black')
   , axis.ticks.length = unit(0.2, "cm")
@@ -77,7 +81,7 @@ ggplot(plotdata_denials) +
   line_chart_theme +
   geom_line(
     aes(fiscal_year, denial_rate, color = industry)
-    , size = 1
+    , linewidth = 1
   ) +
   scale_y_continuous(
     labels = label_percent()
@@ -97,12 +101,12 @@ ggplot(plotdata_denials) +
     aes(x = min(fiscal_year), xend = max(fiscal_year), y = 0, yend = 0)
     , inherit.aes = FALSE
     , color = "black"
-    , size = .4
+    , linewidth = axis_linewidth
   ) +
   scale_color_manual(
     values = c(
-      'Outsourcing' = '#F5921B'
-      , 'Big Tech' = '#5E40BE'
+      'Outsourcing' = oranges[2]
+      , 'Big Tech' = purples[3]
       , 'Other' = 'gray80'
     )
     , breaks = c('Outsourcing', 'Big Tech', 'Other')
@@ -138,7 +142,7 @@ ggplot(plotdata_denials_outsourcing) +
   line_chart_theme +
   geom_line(
     aes(fiscal_year, denial_rate, color = visa_type, linetype = visa_type)
-    , size = 1
+    , linewidth = 1
   ) +
   scale_y_continuous(
     labels = label_percent()
@@ -158,12 +162,12 @@ ggplot(plotdata_denials_outsourcing) +
     aes(x = min(fiscal_year), xend = max(fiscal_year), y = 0, yend = 0)
     , inherit.aes = FALSE
     , color = "black"
-    , size = .4
+    , linewidth = axis_linewidth
   ) +
   scale_color_manual(
     values = c(
-      'New Visas' = '#F5921B'
-      , 'Renewals' = '#F5921B'
+      'New Visas' = oranges[2]
+      , 'Renewals' = oranges[2]
     )
     , breaks = c('New Visas', 'Renewals')
   ) +
@@ -229,7 +233,7 @@ ggplot(plotdata_approvals_outsourcing) +
     aes(x = min(fiscal_year), xend = max(fiscal_year), y = 0, yend = 0)
     , inherit.aes = FALSE
     , color = "black"
-    , size = .4
+    , size = axis_linewidth
   ) +
   scale_y_continuous(
     # labels = label_number(scale_cut = cut_short_scale())
@@ -248,12 +252,12 @@ ggplot(plotdata_approvals_outsourcing) +
   ) +
   scale_color_manual(
     values = c(
-      'Cognizant' = '#F8AE54'
-      , 'Infosys' = '#CA6C0F'
-      , 'Tata' = '#732E00'
-      , 'Wipro' = '#F8AE54'
-      , 'Accenture' = '#CA6C0F'
-      , 'IBM' = '#732E00'
+      'Cognizant' = oranges[1]
+      , 'Infosys' = oranges[3]
+      , 'Tata' = oranges[5]
+      , 'Wipro' = oranges[1]
+      , 'Accenture' = oranges[3]
+      , 'IBM' = oranges[5]
     )
   ) +
   scale_linetype_manual(
@@ -319,7 +323,7 @@ ggplot(plotdata_approvals_tech) +
     aes(x = min(fiscal_year), xend = max(fiscal_year), y = 0, yend = 0)
     , inherit.aes = FALSE
     , color = "black"
-    , size = .4
+    , size = axis_linewidth
   ) +
   scale_y_continuous(
     # labels = label_number(scale_cut = cut_short_scale())
@@ -338,12 +342,12 @@ ggplot(plotdata_approvals_tech) +
   ) +
   scale_color_manual(
     values = c(
-      'Amazon' = '#B6A6E9'
-      , 'Microsoft' = '#5E40BE'
-      , 'Google' = '#21134D'
-      , 'Apple' = '#B6A6E9'
-      , 'Intel' = '#5E40BE'
-      , 'Meta' = '#21134D'
+      'Amazon' = purples[1]
+      , 'Microsoft' = purples[3]
+      , 'Google' = purples[5]
+      , 'Apple' = purples[1]
+      , 'Intel' = purples[3]
+      , 'Meta' = purples[5]
     )
   ) +
   scale_linetype_manual(
@@ -389,13 +393,13 @@ ggplot(plotdata_wages) +
   geom_ribbon(
     data = plotdata_wage_ribbons %>% filter(group == 'Outsourcing')
     , aes(x = DATAFILE_YEAR, ymin = level_i, ymax = level_iv)
-    , fill = '#F5921B'
+    , fill = oranges[2]
     , alpha = .1
   ) +
   geom_ribbon(
     data = plotdata_wage_ribbons %>% filter(group == 'Tech')
     , aes(x = DATAFILE_YEAR, ymin = level_i, ymax = level_iv)
-    , fill = '#5E40BE'
+    , fill = purples[3]
     , alpha = .3
   ) +
   geom_line(
@@ -410,7 +414,7 @@ ggplot(plotdata_wages) +
       , y = plotdata_wage_ribbons %>% filter(DATAFILE_YEAR == 2015 & group == 'Outsourcing') %>% pull(level_iv)
       , yend = plotdata_wage_ribbons %>% filter(DATAFILE_YEAR == 2015 & group == 'Outsourcing') %>% pull(level_iv)
     )
-    , color = '#F5921B'
+    , color = oranges[2]
     , size = .5
     , linetype = 'dotted'
   ) +
@@ -421,7 +425,7 @@ ggplot(plotdata_wages) +
       , y = plotdata_wage_ribbons %>% filter(DATAFILE_YEAR == 2015 & group == 'Tech') %>% pull(level_iv)
       , yend = plotdata_wage_ribbons %>% filter(DATAFILE_YEAR == 2015 & group == 'Tech') %>% pull(level_iv)
     )
-    , color = '#5E40BE'
+    , color = purples[3]
     , size = .5
     , linetype = 'dotted'
   ) +
@@ -429,7 +433,7 @@ ggplot(plotdata_wages) +
     aes(x = min(DATAFILE_YEAR), xend = max(DATAFILE_YEAR), y = 0, yend = 0)
     , inherit.aes = FALSE
     , color = "black"
-    , size = .4
+    , size = axis_linewidth
   ) +
   scale_y_continuous(
     # labels = label_comma(prefix = '$')
@@ -447,13 +451,14 @@ ggplot(plotdata_wages) +
   ) +
   scale_color_manual(
     values = c(
-      'Outsourcing' = '#F5921B'
-      , 'Tech' = '#5E40BE'
+      'Outsourcing' = oranges[2]
+      , 'Tech' = purples[3]
     )
   ) +
+  # Make room on the side of the chart for annotations
   theme(
-    legend.position = 'top'
-    , legend.box.margin = margin(0, 0, -10, 0)
-    , plot.subtitle = element_text(margin = margin(b = 0))
-    , plot.margin = margin(5.5, 110, 5.5, 5.5)
+    # legend.position = 'top'
+    # , legend.box.margin = margin(0, 0, -10, 0)
+    # , plot.subtitle = element_text(margin = margin(b = 0))
+    # , plot.margin = margin(5.5, 110, 5.5, 5.5)
   )
