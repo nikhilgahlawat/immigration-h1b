@@ -4,6 +4,7 @@ library(dplyr)
 library(scales)
 library(forcats)
 library(showtext)
+library(svglite)
 # font_add_google("Roboto", "Roboto")
 # showtext_auto()
 
@@ -18,6 +19,26 @@ wages_file <- 'wages.csv'
 axis_linewidth = .4
 oranges <- c('#F8AE54', '#F5921B', '#CA6C0F', '#9E4A06', '#732E00')
 purples <- c('#B6A6E9', '#876FD4', '#5E40BE', '#3D2785', '#21134D')
+
+# Helper functions
+save_chart <- function(plot, filename, format = 'png', width = 8, height = 6, dpi = 300) {
+  format <- tolower(format)
+  filepath <- paste0(charts_dir, filename, '.', format)
+  if (!format %in% c('png', 'svg')) {
+    stop("Unsupported file format. Use 'png' or 'svg'.")
+  }
+  
+  ggsave (
+    filename = filepath
+    , plot = plot
+    , device = format
+    , width = width
+    , height = height
+    , dpi = if(format == 'svg') 0 else dpi
+  )
+  
+  message('Saved plot to: ', filepath)
+}
 
 # Load data
 denials <- read.csv(paste0(data_dir, denials_file))
@@ -70,7 +91,7 @@ plotdata_denials <- denials %>%
   )
 
 ## Create chart
-ggplot(plotdata_denials) +
+chart_denial_rates_industry <- ggplot(plotdata_denials) +
   labs(
     title = 'H-1B Visa Denial Rates'
     , subtitle = 'Share of applications rejected by the USCIS'
@@ -111,7 +132,11 @@ ggplot(plotdata_denials) +
     )
     , breaks = c('Outsourcing', 'Big Tech', 'Other')
   )
+chart_denial_rates_industry
 
+## Save chart
+save_chart(chart_denial_rates_industry, 'chart_denial_rates_industry')
+save_chart(chart_denial_rates_industry, 'chart_denial_rates_industry', format = 'svg')
 
 # Chart: Denial rates for outsourcing companies
 ## Format data
