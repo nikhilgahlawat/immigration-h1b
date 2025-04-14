@@ -8,20 +8,22 @@ library(svglite)
 # font_add_google("Roboto", "Roboto")
 # showtext_auto()
 
-# Directories and file names
+# ---- Script setup ----
+## Directories and file names
 data_dir <- '../data/analysis/'
 charts_dir <- '../assets/charts/'
 denials_file <- 'denials.csv'
 company_year_file <- 'company_year.csv'
 wages_file <- 'wages.csv'
 
-# Other constants
-axis_linewidth = .4
+## Other constants
+axis_linewidth = .5
 oranges <- c('#F8AE54', '#F5921B', '#CA6C0F', '#9E4A06', '#732E00')
 purples <- c('#B6A6E9', '#876FD4', '#5E40BE', '#3D2785', '#21134D')
 
-# Helper functions
-save_chart <- function(plot, filename, format = 'png', width = 8, height = 6, dpi = 300) {
+# ---- Helper functions ----
+## Save charts to disk
+save_chart <- function(plot = last_plot(), filename, format = 'png', width = 6, height = 3.3, dpi = 300) {
   format <- tolower(format)
   filepath <- paste0(charts_dir, filename, '.', format)
   if (!format %in% c('png', 'svg')) {
@@ -40,20 +42,7 @@ save_chart <- function(plot, filename, format = 'png', width = 8, height = 6, dp
   message('Saved plot to: ', filepath)
 }
 
-# Load data
-denials <- read.csv(paste0(data_dir, denials_file))
-company_year <- read.csv(paste0(data_dir, company_year_file))
-wages <- read.csv(paste0(data_dir, wages_file))
-
-# Format dataframe field names
-format_field_names <- function(df) {
-  new_names <- gsub('\\.', '_', tolower(names(df)))
-  return(new_names)
-}
-names(denials) <- format_field_names(denials)
-names(company_year) <- format_field_names(company_year)
-
-# Create custom themes
+# Custom ggplot themes
 line_chart_theme <- theme(
   , text = element_text(family = 'Arial')
   , panel.background = element_blank()
@@ -70,9 +59,25 @@ line_chart_theme <- theme(
   , plot.subtitle = element_text(face = 'italic', size = 10, margin = margin(b = 20))
   , plot.caption = element_text(color = 'gray30', hjust = 0)
   , legend.key.width = unit(1, "cm")
-  )
+)
 
-# Chart: Denial rates by industry
+
+# ---- Data processing ----
+## Load data
+denials <- read.csv(paste0(data_dir, denials_file))
+company_year <- read.csv(paste0(data_dir, company_year_file))
+wages <- read.csv(paste0(data_dir, wages_file))
+
+## Format dataframe field names
+format_field_names <- function(df) {
+  new_names <- gsub('\\.', '_', tolower(names(df)))
+  return(new_names)
+}
+names(denials) <- format_field_names(denials)
+names(company_year) <- format_field_names(company_year)
+
+
+# ---- Chart: Denial rates by industry ----
 ## Format data
 plotdata_denials <- denials %>% 
   select(
@@ -91,7 +96,7 @@ plotdata_denials <- denials %>%
   )
 
 ## Create chart
-chart_denial_rates_industry <- ggplot(plotdata_denials) +
+ggplot(plotdata_denials) +
   labs(
     title = 'H-1B Visa Denial Rates'
     , subtitle = 'Share of applications rejected by the USCIS'
@@ -132,13 +137,12 @@ chart_denial_rates_industry <- ggplot(plotdata_denials) +
     )
     , breaks = c('Outsourcing', 'Big Tech', 'Other')
   )
-chart_denial_rates_industry
 
 ## Save chart
-save_chart(chart_denial_rates_industry, 'chart_denial_rates_industry')
-save_chart(chart_denial_rates_industry, 'chart_denial_rates_industry', format = 'svg')
+save_chart(filename = 'industry_denial_rates', format = 'png')
+save_chart(filename = 'industry_denial_rates', format = 'svg')
 
-# Chart: Denial rates for outsourcing companies
+# ---- Chart: Denial rates for outsourcing companies ----
 ## Format data
 plotdata_denials_outsourcing <- denials %>% 
   select(
@@ -202,11 +206,12 @@ ggplot(plotdata_denials_outsourcing) +
       , "Renewals" = "dashed"
     ))
 
-# svglite::svglite("/Users/nikhilgahlawat/Desktop/test_chart_svglite.svg", width = 6, height = 3.3)
-# print(test_plot)
-# dev.off()
+## Save chart
+save_chart(filename = 'outsourcing_denial_rates', format = 'png')
+save_chart(filename = 'outsourcing_denial_rates', format = 'svg')
 
-# Chart: Outsourcing company approvals
+
+# ---- Chart: Outsourcing company approvals ----
 ## List of companies to display
 outsourcing_company_list <- c(
   'Cognizant Technology Solutions'
@@ -296,7 +301,11 @@ ggplot(plotdata_approvals_outsourcing) +
       )
     )
 
-# Chart: Tech company approvals
+## Save chart
+save_chart(filename = 'outsourcing_approvals', format = 'png')
+save_chart(filename = 'outsourcing_approvals', format = 'svg')
+
+# ---- Chart: Tech company approvals ----
 ## List of companies to display
 tech_company_list <- c(
   'Amazon'
@@ -386,7 +395,12 @@ ggplot(plotdata_approvals_tech) +
     )
   )
 
-# Chart: Wages by industry
+## Save chart
+save_chart(filename = 'tech_approvals', format = 'png')
+save_chart(filename = 'tech_approvals', format = 'svg')
+
+
+# ---- Chart: Wages by industry ----
 plotdata_wages <- wages %>% 
   mutate(
     category = paste(group, PW_WAGE_LEVEL)
@@ -487,3 +501,8 @@ ggplot(plotdata_wages) +
     # , plot.subtitle = element_text(margin = margin(b = 0))
     # , plot.margin = margin(5.5, 110, 5.5, 5.5)
   )
+
+## Save chart
+save_chart(filename = 'industry_wages', format = 'png')
+save_chart(filename = 'industry_wages', format = 'svg')
+
