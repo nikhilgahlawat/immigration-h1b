@@ -8,7 +8,10 @@ _*.ipynb
 data/analysis/*
 data/intermediate/*
 data/raw/*
+
+# Ignore R system files
 .Rproj.user
+.Rhistory
 
 # Do not commit any image files in the assets folder
 assets/*
