@@ -496,10 +496,10 @@ ggplot(plotdata_wages) +
   ) +
   # Make room on the side of the chart for annotations
   theme(
-    # legend.position = 'top'
-    # , legend.box.margin = margin(0, 0, -10, 0)
-    # , plot.subtitle = element_text(margin = margin(b = 0))
-    # , plot.margin = margin(5.5, 110, 5.5, 5.5)
+    legend.position = 'top'
+    , legend.box.margin = margin(0, 0, -10, 0)
+    , plot.subtitle = element_text(margin = margin(b = 0))
+    , plot.margin = margin(5.5, 110, 5.5, 5.5)
   )
 
 ## Save chart
