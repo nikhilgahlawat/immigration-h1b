@@ -424,7 +424,7 @@ ggplot(plotdata_wages) +
   labs(
     title = 'Wages for H-1B Workers'
     , subtitle = 'Typical wage ranges for H-1B workers at outsourcing and tech companies'
-    , caption = 'Source: Department of Labor. Ranges are based on the prevailing wage levels designated by the DOL.'
+    , caption = 'Source: Department of Labor. Ranges are based on the prevailing wage\nlevels designated by the DOL.'
     , x = ''
     , y = ''
   ) +
