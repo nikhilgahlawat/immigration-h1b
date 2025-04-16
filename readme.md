@@ -1,7 +1,11 @@
 # H-1B Visa Data
-This project cleans and analyzes data around the H-1B visa program.
+Data sources, cleaning process, and methods used to analyze data for the H-1B visa program.
 
-See [DOL](https://www.dol.gov/agencies/whd/immigration/h1b) and [USCIS](https://www.uscis.gov/working-in-the-united-states/h-1b-specialty-occupations) website for a more detailed overview of the H-1B visa.
+Much of the existing research on H-1B visas has focused on [wages](https://nfap.com/wp-content/uploads/2020/10/Analysis-of-DOL-H-1B-Wage-Rule.NFAP-Policy-Brief.October-2020.pdf), [outsourcing companies](https://www.epi.org/blog/the-biden-administration-can-stop-h-1b-visas-from-fueling-outsourcing-half-of-the-top-30-h-1b-employers-were-outsourcing-firms-in-2021/), or the effects of the [annual visa cap](https://www.cato.org/blog/h-1b-lottery-results-announced-3/4-rejected. Fewer have examined industry trends - including sub-industries like AI. This project aims to help fill that gap by bringing together datasets from multiple sources to clean H-1B data, standardize employers information, and classify employers by industry.
+
+For an overview of the methodology used to create this dataset, see [here](https://www.nikhilgahlawat.com/projects/h1b-tech-methodology/).
+
+For a more detailed overview of the H-1B visa, check out info from the [Department of Labor](https://www.dol.gov/agencies/whd/immigration/h1b) and [U.S. Citizenship and Immigration Services](https://www.uscis.gov/working-in-the-united-states/h-1b-specialty-occupations).
 
 ## Data Sources
 ### U.S. Citizenship and Immigration Services
@@ -31,5 +35,5 @@ DOL:
 Scripts are in Jupyter notebooks to make it easier for anyone to adapt them to their own use cases and troubleshoot.
 
 ## Analysis
-Analysis scripts are found in the `/src/analysis/` directory.
+Analysis for a story about the [H-1B visa and the tech industy](https://www.nikhilgahlawat.com/projects/h1b-tech/) can be found in the `/src/analysis/` directory.
 
